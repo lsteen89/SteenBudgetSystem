@@ -1,0 +1,29 @@
+﻿<Window x:Class="SteenBudgetSystemUI.CreateUser"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SteenBudgetSystemUI"
+        mc:Ignorable="d"
+        Title="CreateUser" Height="450" Width="800">
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="Black"/>
+                <GradientStop Color="#FFD42828" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Button x:Name="CreateUserSubmitButton" Content="Button" HorizontalAlignment="Left" Margin="187,321,0,0" VerticalAlignment="Top" Height="32" Width="92"/>
+        <TextBox x:Name="CreateUserFirstNameBox" HorizontalAlignment="Left" Margin="215,91,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="213" Height="28"/>
+        <TextBox x:Name="CreateUserLastNameBox" HorizontalAlignment="Left" Margin="215,142,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="213" Height="28"/>
+        <TextBox x:Name="CreateUserEmailBox" HorizontalAlignment="Left" Margin="215,189,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="213" Height="28"/>
+        <Label x:Name="CreateUserFirstNameLabel" Content="First name" HorizontalAlignment="Left" Margin="85,91,0,0" VerticalAlignment="Top" Width="97" Foreground="#FF9DE215" FontSize="16"/>
+        <Label x:Name="CreateUserLastNameLabel" Content="Last name" HorizontalAlignment="Left" Margin="85,139,0,0" VerticalAlignment="Top" Width="97" Foreground="#FF9DE215" FontSize="16"/>
+        <Label x:Name="CreateUserEmailLabel" Content="Email" HorizontalAlignment="Left" Margin="85,186,0,0" VerticalAlignment="Top" Width="97" Foreground="#FF9DE215" FontSize="16"/>
+        <Label x:Name="CreateUserPassWordLabel" Content="Password" HorizontalAlignment="Left" Margin="85,236,0,0" VerticalAlignment="Top" Width="97" Foreground="#FF9DE215" FontSize="16"/>
+        <Label x:Name="CreateUserPassWordVerifyLabel" Content="Verify password" HorizontalAlignment="Left" Margin="85,285,0,0" VerticalAlignment="Top" Width="143" Foreground="#FF9DE215" FontSize="16"/>
+        <PasswordBox x:Name="CreateUserPasswordBox" HorizontalAlignment="Left" Margin="215,236,0,0" VerticalAlignment="Top" Width="213" Height="28"/>
+        <PasswordBox x:Name="CreateUserPasswordVerifyBox" HorizontalAlignment="Left" Margin="215,285,0,0" VerticalAlignment="Top" Width="213" Height="28"/>
+
+    </Grid>
+</Window>

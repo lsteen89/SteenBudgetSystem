@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteenBudgetSystemUI", "SteenBudgetSystemUI\SteenBudgetSystemUI.csproj", "{7200FD8B-3581-4175-84DB-DE35E63FCF50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteenBudgetSystemLib", "SteenBudgetSystemLib\SteenBudgetSystemLib.csproj", "{4ABADC9E-7899-4A65-A97A-92881046A902}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7200FD8B-3581-4175-84DB-DE35E63FCF50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7200FD8B-3581-4175-84DB-DE35E63FCF50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7200FD8B-3581-4175-84DB-DE35E63FCF50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7200FD8B-3581-4175-84DB-DE35E63FCF50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4ABADC9E-7899-4A65-A97A-92881046A902}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4ABADC9E-7899-4A65-A97A-92881046A902}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4ABADC9E-7899-4A65-A97A-92881046A902}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4ABADC9E-7899-4A65-A97A-92881046A902}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FD838F5E-E22C-4149-A9CC-04348316CE95}
+	EndGlobalSection
+EndGlobal
