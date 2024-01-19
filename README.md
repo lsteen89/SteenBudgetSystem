@@ -1,15 +1,15 @@
-Detta projektet var något jag enbart gjorde inför min intervju till Macrobond.
+Detta projektet var något jag enbart gjorde inför min intervju till Macrobond.<br />
 
-Förhoppningvis innehåller detta projektet tills någon kollar på det:
+Förhoppningvis innehåller detta projektet tills någon kollar på det:<br />
 
-[x] En databas (MySQL server) med tillhörande tabeller
-[x] Ett registeringsformulär
-[ ] Ett inloggningsfönster
-[ ] Ett inledande formulär om uppsättning av budget
-[ ] Snygga grafer
-[ ] Bra budgettips
+[x] En databas (MySQL server) med tillhörande tabeller<br />
+[x] Ett registeringsformulär<br />
+[ ] Ett inloggningsfönster<br />
+[ ] Ett inledande formulär om uppsättning av budget<br />
+[ ] Snygga grafer<br />
+[ ] Bra budgettips<br />
 
-Stack: 
-MySql server
-C#.net WPF
-MVVM
+Stack: <br />
+MySql server<br />
+C#.net WPF<br />
+MVVM<br />
