@@ -6,6 +6,43 @@
         xmlns:local="clr-namespace:SteenBudgetSystemUI"
         mc:Ignorable="d"
         Title="CreateUser" Height="450" Width="800">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <Style x:Key="ValidationMessageStyle" TargetType="TextBlock">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding FirstNameValidationMessage}" Value="Invalid characters in First Name">
+                    <Setter Property="Foreground" Value="Red"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding LastNameValidationMessage}" Value="Invalid characters in Last Name">
+                    <Setter Property="Foreground" Value="Red"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding FirstNameValidationMessage}" Value="Valid First Name">
+                    <Setter Property="Foreground" Value="Green"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding LastNameValidationMessage}" Value="Valid Last Name">
+                    <Setter Property="Foreground" Value="Green"/>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding EmailValidationMessage}" Value="Invalid Email">
+                    <Setter Property="Foreground" Value="Red"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding EmailValidationMessage}" Value="Valid Email">
+                    <Setter Property="Foreground" Value="Green"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="PasswordValidationMessageStyle" TargetType="TextBlock">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding PasswordValidationMessage}" Value="Password is valid">
+                    <Setter Property="Foreground" Value="Green"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding PasswordValidationMessage}" Value="Password must be at least 8 characters long, contain an uppercase letter and a number">
+                    <Setter Property="Foreground" Value="Red"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
     <Grid>
         <Grid.Background>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -13,17 +50,113 @@
                 <GradientStop Color="#FFD42828" Offset="1"/>
             </LinearGradientBrush>
         </Grid.Background>
-        <Button x:Name="CreateUserSubmitButton" Content="Button" HorizontalAlignment="Left" Margin="187,321,0,0" VerticalAlignment="Top" Height="32" Width="92"/>
-        <TextBox x:Name="CreateUserFirstNameBox" HorizontalAlignment="Left" Margin="215,91,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="213" Height="28"/>
-        <TextBox x:Name="CreateUserLastNameBox" HorizontalAlignment="Left" Margin="215,142,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="213" Height="28"/>
-        <TextBox x:Name="CreateUserEmailBox" HorizontalAlignment="Left" Margin="215,189,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="213" Height="28"/>
+        <Button x:Name="CreateUserSubmitButton" 
+        Content="Submit" 
+        HorizontalAlignment="Left" 
+        Margin="215,321,0,0" 
+        VerticalAlignment="Top" 
+        Height="32" 
+        Width="92" 
+        Command="{Binding CreateUserCommand}">
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Setter Property="Background" Value="LightGray"/>
+                    <!-- Default background -->
+                    <Style.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Background" Value="Gray"/>
+                            <!-- Background when disabled -->
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+
+        <TextBox x:Name="CreateUserFirstNameBox" HorizontalAlignment="Left" Margin="215,91,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="213" Height="28" Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox x:Name="CreateUserLastNameBox" HorizontalAlignment="Left" Margin="215,142,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="213" Height="28" Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox x:Name="CreateUserEmailBox" HorizontalAlignment="Left" Margin="215,189,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="213" Height="28" Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"/>
         <Label x:Name="CreateUserFirstNameLabel" Content="First name" HorizontalAlignment="Left" Margin="85,91,0,0" VerticalAlignment="Top" Width="97" Foreground="#FF9DE215" FontSize="16"/>
         <Label x:Name="CreateUserLastNameLabel" Content="Last name" HorizontalAlignment="Left" Margin="85,139,0,0" VerticalAlignment="Top" Width="97" Foreground="#FF9DE215" FontSize="16"/>
         <Label x:Name="CreateUserEmailLabel" Content="Email" HorizontalAlignment="Left" Margin="85,186,0,0" VerticalAlignment="Top" Width="97" Foreground="#FF9DE215" FontSize="16"/>
         <Label x:Name="CreateUserPassWordLabel" Content="Password" HorizontalAlignment="Left" Margin="85,236,0,0" VerticalAlignment="Top" Width="97" Foreground="#FF9DE215" FontSize="16"/>
         <Label x:Name="CreateUserPassWordVerifyLabel" Content="Verify password" HorizontalAlignment="Left" Margin="85,285,0,0" VerticalAlignment="Top" Width="143" Foreground="#FF9DE215" FontSize="16"/>
-        <PasswordBox x:Name="CreateUserPasswordBox" HorizontalAlignment="Left" Margin="215,236,0,0" VerticalAlignment="Top" Width="213" Height="28"/>
-        <PasswordBox x:Name="CreateUserPasswordVerifyBox" HorizontalAlignment="Left" Margin="215,285,0,0" VerticalAlignment="Top" Width="213" Height="28"/>
+        <PasswordBox x:Name="CreateUserPasswordBox" HorizontalAlignment="Left" Margin="215,236,0,0" VerticalAlignment="Top" Width="213" Height="28" PasswordChanged="CreateUserPasswordBox_PasswordChanged"/>
+        <PasswordBox x:Name="CreateUserPasswordVerifyBox" HorizontalAlignment="Left" Margin="215,285,0,0" VerticalAlignment="Top" Width="213" Height="28" PasswordChanged="CreateUserPasswordVerifyBox_PasswordChanged"/>
+        <TextBlock x:Name="CreateUserPasswordInfoTextBlock"
+           HorizontalAlignment="Left"
+           Margin="441,286,0,0"
+           TextWrapping="Wrap"
+           VerticalAlignment="Top"
+           Height="51"
+           Width="231" FontSize="16"
+            Visibility="{Binding IsPasswordMatchInfoVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <!-- Triggers -->
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding PasswordsMatch}" Value="True">
+                            <Setter Property="Foreground" Value="Green"/>
+                            <Setter Property="Text" Value="Passwords match"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding PasswordsMatch}" Value="False">
+                            <Setter Property="Foreground" Value="Red"/>
+                            <Setter Property="Text" Value="Passwords need to match"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+
+        <TextBlock x:Name="CreateUserFirstNameTextBlock"
+           HorizontalAlignment="Left"
+           Margin="433,92,0,0"
+           TextWrapping="Wrap"
+           VerticalAlignment="Top"
+           Height="27"
+           Width="239"
+           FontSize="16"
+           Text="{Binding FirstNameValidationMessage}"
+           Visibility="{Binding FirstNameValidationVisibility}"
+           Style="{StaticResource ValidationMessageStyle}"/>
+
+        <TextBlock x:Name="CreateUserLastNameTextBlock" 
+                   HorizontalAlignment="Left" 
+                   Margin="441,143,0,0" 
+                   TextWrapping="Wrap" 
+                   VerticalAlignment="Top" 
+                   Width="254" 
+                   Height="27" 
+                   FontSize="16"
+                   Text="{Binding LastNameValidationMessage}"
+                   Visibility="{Binding LastNameValidationVisibility}"
+                   Style="{StaticResource ValidationMessageStyle}"/>
+        <TextBlock x:Name="CreateUserValidateEmailTextBlock" 
+                   HorizontalAlignment="Left" 
+                   Margin="441,189,0,0" 
+                   TextWrapping="Wrap" 
+                   VerticalAlignment="Top" 
+                   Height="28" 
+                   Width="231" 
+                   FontSize="16"
+                   Text="{Binding EmailValidationMessage}"
+                   Visibility="{Binding EmailValidationVisibility}"
+                   Style="{StaticResource ValidationMessageStyle}"/>
+        <TextBlock x:Name="CreateUserPasswordTextBlock" 
+                   HorizontalAlignment="Left" 
+                   Margin="441,222,0,0" 
+                   TextWrapping="Wrap" 
+                   VerticalAlignment="Top" 
+                   Height="59" 
+                   Width="231"
+                   Text="{Binding PasswordValidationMessage}"
+                   Visibility="{Binding PasswordValidationVisibility}"
+                   Style="{StaticResource PasswordValidationMessageStyle}"
+            />
+        <Button Content="Debug" HorizontalAlignment="Left" Margin="556,342,0,0" VerticalAlignment="Top" Height="36" Width="87" Click="Button_Click"/>
+
+
+
+
 
     </Grid>
 </Window>

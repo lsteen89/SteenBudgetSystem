@@ -13,13 +13,14 @@
         </LinearGradientBrush>
     </Window.Background>
     <Grid>
-        <Label x:Name="LoginPageLoginNameLabel" Content="LoginName" HorizontalAlignment="Left" Margin="147,154,0,0" VerticalAlignment="Top" FontSize="16" Foreground="#FFFF0404"/>
-        <Label x:Name="LoginPagePasswordLabel" Content="Password" HorizontalAlignment="Left" Margin="147,186,0,0" VerticalAlignment="Top" FontSize="16" Foreground="#FFFF0404"/>
-        <Button x:Name="LoginPageLoginButton" Content="Login" HorizontalAlignment="Left" Margin="147,238,0,0" VerticalAlignment="Top" Height="36" Width="99" Background="#FFEEDBDB"/>
+        <Label x:Name="LoginPageLoginNameLabel" Content="Email" HorizontalAlignment="Left" Margin="147,160,0,0" VerticalAlignment="Top" FontSize="16" Foreground="#FFFF0404"/>
+        <Label x:Name="LoginPagePasswordLabel" Content="Password" HorizontalAlignment="Left" Margin="147,186,0,0" VerticalAlignment="Top" FontSize="16" Foreground="#FFFF0404" Width="99"/>
+        <Button x:Name="LoginPageLoginButton" Content="Login" HorizontalAlignment="Left" Margin="147,238,0,0" VerticalAlignment="Top" Height="36" Width="99" Background="#FFEEDBDB" Command="{Binding LoginCommand}" CommandParameter="{Binding ElementName=LoginPagePasswordBox}" Click="LoginPageLoginButton_Click"/>
         <Button x:Name="LoginPageForgotPasswordButton" Content="Forgot Password" HorizontalAlignment="Left" Margin="251,238,0,0" VerticalAlignment="Top" Height="36" Width="99" Background="#FFEDD4D4"/>
         <Button x:Name="LoginPageRegisterButton" Command="{Binding OpenCreateUserCommand}" Content="Register" HorizontalAlignment="Left" Margin="355,238,0,0" VerticalAlignment="Top" Height="36" Width="99" Background="#FFE8D8D8"/>
-        <TextBox x:Name="LoginPageLoginNameBox" HorizontalAlignment="Left" Margin="251,160,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="259" Height="25"/>
-        <TextBox x:Name="LoginPagePasswordBox" HorizontalAlignment="Left" Margin="251,192,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="259" Height="25"/>
+        <TextBox x:Name="LoginPageLoginNameBox" HorizontalAlignment="Left" Margin="251,160,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="259" Height="25" Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"/>
+        <PasswordBox x:Name="LoginPagePasswordBox" HorizontalAlignment="Left" Margin="251,193,0,0" VerticalAlignment="Top" Width="259" Height="24"/>
+
 
     </Grid>
 </Window>

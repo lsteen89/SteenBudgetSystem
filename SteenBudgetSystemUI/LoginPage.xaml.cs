@@ -26,5 +26,15 @@ namespace SteenBudgetSystemUI
             InitializeComponent();
             DataContext = new LoginViewModel(new DialogService());
         }
+
+        private void LoginPageLoginButton_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as LoginViewModel;
+            if (viewModel != null)
+            {
+                viewModel.Password = LoginPagePasswordBox.Password;
+                viewModel.LoginCommand.Execute(null);
+            }
+        }
     }
 }

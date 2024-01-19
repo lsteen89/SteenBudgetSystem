@@ -12,15 +12,41 @@ namespace SteenBudgetSystemLib.ViewModel
 {
     public class LoginViewModel : INotifyPropertyChanged
     {
+        private string _email;
+        private string _password;
         private readonly IDialogService _dialogService;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public LoginViewModel(IDialogService dialogService)
         {
             _dialogService = dialogService;
         }
+        public string Email
+        {
+            get { return _email; }
+            set
+            {
+                _email = value;
+                OnPropertyChanged(nameof(Email));
+            }
+        }
+        public string Password
+        {
+            get { return _password; }
+            set { _password = value; OnPropertyChanged(nameof(Password)); }
+        }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public ICommand LoginCommand { get; }
 
+        public LoginViewModel()
+        {
+            LoginCommand = new RelayCommand(ExecuteLogin);
+        }
+
+        private void ExecuteLogin(object parameter)
+        {
+            // Implement your login logic here
+        }
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
