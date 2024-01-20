@@ -63,5 +63,15 @@ namespace SteenBudgetSystemLib.DataAccess
                 return user; 
             }
         }
+        public bool CreatePartner(string Username, string partnerMainIncome, string partnerOtherIncome)
+        {
+            using (var connection = GlobalConfig.GetConnection())
+            {
+                string sqlQuery = "select persoid from users where Email = @Email";
+                User user = connection.QuerySingleOrDefault<User>(sqlQuery, new { Email = Username });
+                sqlQuery = "Insert into partner ";
+            }
+            return true;
+        }
     }
 }

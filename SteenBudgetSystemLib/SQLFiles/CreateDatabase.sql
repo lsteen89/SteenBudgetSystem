@@ -42,21 +42,21 @@ BEGIN
         Id INT IDENTITY (1, 1) PRIMARY KEY,
         PersoId CHAR(36),
         Name VARCHAR(255),
-        -- other partner-specific columns
-        FOREIGN KEY (PersoId) REFERENCES Users(PersoId)
-)
+        
+    )
 END
 
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='PartnerIncome' and xtype='U')
 BEGIN
     CREATE TABLE PartnerIncome (
         Id INT IDENTITY (1, 1) PRIMARY KEY,
-        PartnerId CHAR(36),
+        PartnerId INT,
         MainIncome DECIMAL(10, 2),
         SideIncome DECIMAL(10, 2),
-        FOREIGN KEY (PartnerId) REFERENCES Partner(PartnerId)
+        FOREIGN KEY (PartnerId) REFERENCES Partner(Id)
     );
 END
+
 
 
 --insert into Users values('1', 'Linus', 'Steen', 'njur@steen.se','1', 'hemligt', 'salt','1', '1', 'admin', getdate(), getdate())

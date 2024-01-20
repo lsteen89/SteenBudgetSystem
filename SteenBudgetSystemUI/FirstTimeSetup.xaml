@@ -27,7 +27,7 @@
            Text="{Binding WelcomeText}"
            Foreground="{Binding TextBlockColor}"
            VerticalAlignment="Top"/>
-        <CheckBox x:Name="FirstTimeSetupPartnerCheckBox" Content="Do you have a shared economy with someone?" HorizontalAlignment="Left" Margin="45,0,0,0" VerticalAlignment="Center" Width="284" IsChecked="{Binding UserHasPartner}"/>
+        <CheckBox x:Name="FirstTimeSetupPartnerCheckBox" Content="Do you have a shared economy with someone?" HorizontalAlignment="Left" Margin="45,0,0,0" VerticalAlignment="Center" Width="284" IsChecked="{Binding UserHasPartner, Mode=TwoWay}"/>
         <TextBlock x:Name="FirstTimeSetupSalaryTextBlock" HorizontalAlignment="Left" Margin="45,114,0,0" TextWrapping="Wrap" Text="Please enter your salary after taxes" VerticalAlignment="Top"/>
         <TextBox x:Name="FirstTimeSetupSalaryTextBox1" HorizontalAlignment="Left" Margin="45,135,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding UserMainIncome, UpdateSourceTrigger=PropertyChanged}"/>
         <TextBlock x:Name="FirstTimeSetupOtherIncomeTextBlock" HorizontalAlignment="Left" Margin="45,158,0,0" TextWrapping="Wrap" Text="Please enter other incomes that should be counted to the budget" VerticalAlignment="Top" Width="355"/>
@@ -35,8 +35,8 @@
         <TextBlock x:Name="FirstTimeSetupPartnerSalaryTextBlock" HorizontalAlignment="Left" Margin="45,230,0,0" TextWrapping="Wrap" Text="Please enter partners salary after taxes" VerticalAlignment="Top" Visibility="{Binding PartnerDetailsVisibility}"/>
         <TextBox x:Name="FirstTimeSetupPartnerSalaryTextBox" HorizontalAlignment="Left" Margin="45,251,0,0" TextWrapping="Wrap" Text="{Binding PartnerMainIncome, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120" Visibility="{Binding PartnerDetailsVisibility}"/>
         <TextBlock x:Name="FirstTimeSetupPartnerSalaryTextBlock1" HorizontalAlignment="Left" Margin="45,274,0,0" TextWrapping="Wrap" Text="Please enter partners salary after taxes" VerticalAlignment="Top" Visibility="{Binding PartnerDetailsVisibility}"/>
-        <TextBox x:Name="FirstTimeSetupPartnerSalaryTextBox1" HorizontalAlignment="Left" Margin="45,295,0,0" TextWrapping="Wrap" Text="{Binding PartnerOtherIncome, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120" Visibility="{Binding PartnerDetailsVisibility}"/>
-        <Button x:Name="FirstTimeSetupDoneButton" Content="Done" HorizontalAlignment="Left" Margin="45,323,0,0" VerticalAlignment="Top" Width="75"/>
+        <TextBox x:Name="FirstTimeSetupPartnerOtherIncomeTextBox" HorizontalAlignment="Left" Margin="45,295,0,0" TextWrapping="Wrap" Text="{Binding PartnerOtherIncome, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120" Visibility="{Binding PartnerDetailsVisibility}"/>
+        <Button x:Name="FirstTimeSetupDoneButton" Content="Done" HorizontalAlignment="Left" Margin="45,323,0,0" VerticalAlignment="Top" Width="75" Command="{Binding SetupDoneCommand}" IsEnabled="{Binding IsSetupDoneEnabled}" />
 
     </Grid>
 </Window>
