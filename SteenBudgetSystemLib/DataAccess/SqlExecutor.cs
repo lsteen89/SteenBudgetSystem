@@ -53,5 +53,14 @@ namespace SteenBudgetSystemLib.DataAccess
                 }
             }
         }
+        public User GetUserByEmail(string email)
+        {
+            using (var connection = GlobalConfig.GetConnection())
+            {
+                string sqlQuery = "SELECT * FROM Users WHERE Email = @Email";
+                User user = connection.QuerySingleOrDefault<User>(sqlQuery, new { Email = email });
+                return user; 
+            }
+        }
     }
 }

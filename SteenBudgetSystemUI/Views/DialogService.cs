@@ -16,7 +16,9 @@ namespace SteenBudgetSystemUI.Views
                 case "CreateUser":
                     new CreateUser().Show();
                     break;
-                    // Handle other cases
+                case "MainWindow":
+                    new MainWindow().Show();
+                    break;
             }
         }
     }
