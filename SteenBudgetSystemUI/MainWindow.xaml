@@ -4,9 +4,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SteenBudgetSystemUI"
+        
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+    <Window.Background>
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="Black"/>
+            <GradientStop Color="#FFD6B0B0" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Background>
+
     <Grid>
+        <Button x:Name="MainWindowDebugButton" Content="Debug" HorizontalAlignment="Left" Margin="527,311,0,0" VerticalAlignment="Top" Height="39" Width="97" Command="{Binding DebugButtonCommand}"/>
 
     </Grid>
 </Window>

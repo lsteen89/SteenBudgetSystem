@@ -14,9 +14,12 @@ namespace SteenBudgetSystemLib.Models
         public string Firstname { get; set; }
         public string Lastname { get; set; }
         public string Email { get; set; }
+        public int EmailConfirmed { get; set; }
         public string Password { get; set; }
         public string PasswordSalt { get; set; }
-        public int EmailConfirmed { get; set; }
+        public string Roles { get; set; } 
+        public bool FirstLogin {  get; set; }
+        
 
     }
 }

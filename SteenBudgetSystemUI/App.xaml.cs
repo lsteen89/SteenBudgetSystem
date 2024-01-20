@@ -5,6 +5,7 @@ using System.Windows;
 using SteenBudgetSystemUI.Views;
 using SteenBudgetSystemLib.Services;
 using SteenBudgetSystemLib.ViewModel;
+using SteenBudgetSystemLib.Models;
 
 
 namespace SteenBudgetSystemUI
@@ -16,50 +17,60 @@ namespace SteenBudgetSystemUI
     {
         private IServiceProvider _serviceProvider;
 
-        protected override void OnStartup(StartupEventArgs e)
-        {
-            base.OnStartup(e);
-
-            // Create and show the login page
-            LoginPage loginPage = new LoginPage();
-            bool? dialogResult = loginPage.ShowDialog();
-
-            // Check the dialog result to see if login was successful
-            if (dialogResult == true)
-            {
-                // If login successful, create and show the main window
-                MainWindow mainWindow = new MainWindow();
-                mainWindow.Show();
-            }
-            else
-            {
-                // If login failed or was canceled, shut down the application
-                this.Shutdown();
-            }
-        }
         public App()
         {
             ConfigureServices();
-
-            // Create the main window and set its DataContext
-            MainWindow = new MainWindow
-            {
-                DataContext = _serviceProvider.GetRequiredService<LoginViewModel>()
-            };
         }
 
         private void ConfigureServices()
         {
             var services = new ServiceCollection();
 
-            // Register your services and view models here
+            // Register services
+            services.AddSingleton<ISessionService, SessionService>();
+            services.AddSingleton<IDialogService, DialogService>();
+
+            // Register ViewModels
             services.AddTransient<LoginViewModel>();
-            services.AddTransient<IDialogService, DialogService>();
+            services.AddTransient<MainWindowViewModel>();
+            services.AddTransient<FirstTimeSetupViewModel>();
+
+            //Pages
+            services.AddTransient<LoginPage>();
+            services.AddTransient<CreateUser>();
+            services.AddTransient<MainWindow>();
+            services.AddSingleton<FirstTimeSetup>();
 
             // Build the service provider
             _serviceProvider = services.BuildServiceProvider();
         }
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            // Resolve the LoginViewModel
+            var loginViewModel = _serviceProvider.GetRequiredService<LoginViewModel>();
+
+            // Create the login page and set its DataContext
+            var loginPage = _serviceProvider.GetRequiredService<LoginPage>();
+
+            // Show the login page
+            bool? dialogResult = loginPage.ShowDialog();
+
+            // Proceed based on the dialog result
+            if (dialogResult == true)
+            {
+                var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+                mainWindow.Show();
+            }
+            else
+            {
+                Shutdown();
+            }
+        }
     }
+
 
 
 }

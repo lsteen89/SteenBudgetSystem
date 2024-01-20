@@ -1,4 +1,5 @@
-﻿using SteenBudgetSystemLib.ViewModel;
+﻿using SteenBudgetSystemLib.Services;
+using SteenBudgetSystemLib.ViewModel;
 using SteenBudgetSystemUI.Views;
 using System;
 using System.Collections.Generic;
@@ -21,10 +22,10 @@ namespace SteenBudgetSystemUI
     /// </summary>
     public partial class LoginPage : Window
     {
-        public LoginPage()
+        public LoginPage(LoginViewModel viewModel)
         {
             InitializeComponent();
-            DataContext = new LoginViewModel(new DialogService());
+            DataContext = viewModel;
         }
 
         private void LoginPageLoginButton_Click(object sender, RoutedEventArgs e)

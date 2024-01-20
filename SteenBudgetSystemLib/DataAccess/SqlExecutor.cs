@@ -27,8 +27,9 @@ namespace SteenBudgetSystemLib.DataAccess
         {
             using (var connection = GlobalConfig.GetConnection())
             {
-                string sqlQuery = @"INSERT INTO Users (Persoid, Firstname, Lastname, Email, EmailConfirmed, Password, PasswordSalt, CreatedBy, CreatedTime)
-                            VALUES (@Persoid, @Firstname, @Lastname, @Email, 0, @Password, @PasswordSalt, 'System', GETDATE())";
+                string sqlQuery = @"INSERT INTO Users (Persoid, Firstname, Lastname, Email, EmailConfirmed, Password, PasswordSalt, Roles, CreatedBy, CreatedTime)
+                    VALUES (@Persoid, @Firstname, @Lastname, @Email, 0, @Password, @PasswordSalt, '1', 'System', GETDATE())";
+
                 IDbTransaction transaction = null;
                 try
                 {
