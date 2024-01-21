@@ -8,13 +8,13 @@ namespace SteenBudgetSystemLib.Models
 {
     public class Partner
     {
-        public int PartnerId { get; set; }
+        public int Id { get; set; }
         public string PersoId { get; set; }
+        public string PartnerId { get; set; }
         public string Name { get; set; }
-
-        // Add other properties that match the columns in your Partner table
-
-        // Navigation property to link to the User model
+        public string CreatedBy { get; set; }
+        public DateTime CreatedTime { get; set; }
+        public DateTime? LastUpdatedTime { get; set; }
         public User User { get; set; }
     }
 

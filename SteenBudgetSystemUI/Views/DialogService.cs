@@ -19,6 +19,10 @@ namespace SteenBudgetSystemUI.Views
         {
             _serviceProvider = serviceProvider;
         }
+        public void ShowMessage(string message, string title)
+        {
+            MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Error);
+        }
         public void ShowWindow(string windowName)
         {
             try

@@ -13,6 +13,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using SteenBudgetSystemLib.DataAccess;
+using System.Text.RegularExpressions;
 
 namespace SteenBudgetSystemLib.ViewModel
 {
@@ -24,6 +25,8 @@ namespace SteenBudgetSystemLib.ViewModel
         private string _userOtherIncome;
         private string _partnerMainIncome;
         private string _partnerOtherIncome;
+        private string _partnerName;
+        private string _errorMessagePartnerName;
 
         private UserSession _userSession;
         public RelayCommand DebugButtonCommand { get; private set; }
@@ -31,6 +34,7 @@ namespace SteenBudgetSystemLib.ViewModel
         private Brush _textBlockColor = Brushes.Black;
         private Visibility _partnerDetailsVisibility = Visibility.Collapsed;
         private readonly ISessionService _sessionService;
+        private readonly IDialogService _dialogService;
         public ICommand SetupDoneCommand { get; private set; }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -43,13 +47,14 @@ namespace SteenBudgetSystemLib.ViewModel
             get { return _userSession; }
             set { _userSession = value; }
         }
-        public FirstTimeSetupViewModel(ISessionService sessionService)
+        public FirstTimeSetupViewModel(ISessionService sessionService, IDialogService dialogService)
         {
             _sessionService = sessionService ?? throw new ArgumentNullException(nameof(sessionService));
             UserSession = _sessionService.CurrentSession;
             DebugButtonCommand = new RelayCommand(ExecuteDebugButtonCommand);
             TextBlockColor = Brushes.Red;
             SetupDoneCommand = new RelayCommand(ExecuteSetupDone);
+            _dialogService = dialogService;
         }
 
         public string UserMainIncome
@@ -86,6 +91,38 @@ namespace SteenBudgetSystemLib.ViewModel
             get => _partnerOtherIncome;
             set => SetIncomeValue(ref _partnerOtherIncome, value);
         }
+        public string PartnerName
+        {
+            get => _partnerName;
+            set
+            {
+                if (_partnerName != value)
+                {
+                    if (IsValidPartnerName(value))
+                    {
+                        _partnerName = value;
+                        ErrorMessagePartnerName = string.Empty; // Clear any existing error message
+                        OnPropertyChanged(nameof(PartnerName));
+                    }
+                    else
+                    {
+                        // If validation fails, set the error message and do not update _partnerName
+                        // Error message is set within IsValidPartnerName method
+                    }
+                }
+            }
+        }
+
+        public string ErrorMessagePartnerName
+        {
+            get => _errorMessagePartnerName;
+            set
+            {
+                _errorMessagePartnerName = value;
+                OnPropertyChanged(nameof(ErrorMessagePartnerName));
+            }
+        }
+
 
         public Visibility PartnerDetailsVisibility
         {
@@ -105,7 +142,8 @@ namespace SteenBudgetSystemLib.ViewModel
             }
             else
             {
-                MessageBox.Show("Invalid input! Only numbers and a single decimal point are allowed.");
+                string error = "Invalid input! Only numbers and a single decimal point are allowed.";
+                _dialogService.ShowMessage(error, "Validation Error");
             }
         }
 
@@ -147,6 +185,20 @@ namespace SteenBudgetSystemLib.ViewModel
                 }
             }
         }
+        private bool IsValidPartnerName(string name)
+        {
+            string pattern = @"^\s*[A-Za-z]+(?: [A-Za-z]+)*\s*$";
+
+            if (!Regex.IsMatch(name, pattern))
+            {
+                ErrorMessagePartnerName = "Name can only contain alphabetical characters and spaces.";
+                _dialogService.ShowMessage(ErrorMessagePartnerName, "Validation Error");
+                return false;
+            }
+
+            ErrorMessagePartnerName = string.Empty;
+            return true;
+        }
 
         public string WelcomeText
         {
@@ -164,7 +216,8 @@ namespace SteenBudgetSystemLib.ViewModel
             if (_sessionService.CurrentSession != null)
             {
                 welcome += _sessionService.CurrentSession.Username + "!\n" +
-                           "This is your first time, please fill in some information about yourself";
+                           "This is your first time, please fill in some information about yourself\n" +
+                           "Fields marked with red asterix are mandatory";
             }
             return welcome;
         }
@@ -174,7 +227,7 @@ namespace SteenBudgetSystemLib.ViewModel
             //User has partner, have to create partner table
             if(_userHasPartner)
             {
-                sqlExecutor.CreatePartner(_userSession.Username, _partnerMainIncome, _partnerOtherIncome);
+                sqlExecutor.CreatePartner(_userSession.Username, _partnerMainIncome, _partnerOtherIncome, _partnerName);
             }
 
         }
@@ -184,7 +237,7 @@ namespace SteenBudgetSystemLib.ViewModel
             {
                 if (_userHasPartner)
                 {
-                    return !string.IsNullOrWhiteSpace(UserMainIncome) && !string.IsNullOrWhiteSpace(PartnerMainIncome);
+                    return !string.IsNullOrWhiteSpace(UserMainIncome) && !string.IsNullOrWhiteSpace(PartnerMainIncome) && !string.IsNullOrEmpty(_partnerName);
                 }
                 else
                 {

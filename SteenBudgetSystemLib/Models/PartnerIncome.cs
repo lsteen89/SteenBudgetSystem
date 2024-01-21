@@ -8,10 +8,13 @@ namespace SteenBudgetSystemLib.Models
 {
     public class PartnerIncome
     {
-        public int PartnerIncomeId { get; set; }
-        public string PartnerId { get; set; } 
+        public int Id { get; set; }
+        public int PartnerId { get; set; }
         public decimal MainIncome { get; set; }
         public decimal SideIncome { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime CreatedTime { get; set; }
+        public DateTime? LastUpdatedTime { get; set; }
         public Partner Partner { get; set; }
     }
 

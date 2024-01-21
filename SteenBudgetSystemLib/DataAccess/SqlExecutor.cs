@@ -35,7 +35,7 @@ namespace SteenBudgetSystemLib.DataAccess
                 {
                     transaction = connection.BeginTransaction();
 
-                    user.Persoid = Guid.NewGuid().ToString();
+                    user.PersoId = Guid.NewGuid().ToString();
 
                     connection.Execute(sqlQuery, user, transaction);
 
@@ -63,13 +63,14 @@ namespace SteenBudgetSystemLib.DataAccess
                 return user; 
             }
         }
-        public bool CreatePartner(string Username, string partnerMainIncome, string partnerOtherIncome)
+        public bool CreatePartner(string Username, string partnerMainIncome, string partnerOtherIncome, string partnerName)
         {
+            string partnerGuid = Guid.NewGuid().ToString();
             using (var connection = GlobalConfig.GetConnection())
             {
                 string sqlQuery = "select persoid from users where Email = @Email";
                 User user = connection.QuerySingleOrDefault<User>(sqlQuery, new { Email = Username });
-                sqlQuery = "Insert into partner ";
+                sqlQuery = "Insert into partner values(@PersoId, @PartnerId";
             }
             return true;
         }

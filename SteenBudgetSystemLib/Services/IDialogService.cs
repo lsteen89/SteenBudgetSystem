@@ -9,5 +9,6 @@ namespace SteenBudgetSystemLib.Services
     public interface IDialogService
     {
         void ShowWindow(string windowName);
+        void ShowMessage(string message, string title);
     }
 }

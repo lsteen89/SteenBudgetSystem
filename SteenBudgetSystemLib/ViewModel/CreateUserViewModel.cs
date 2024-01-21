@@ -297,7 +297,7 @@ namespace SteenBudgetSystemLib.ViewModel
             User user = new();
 
             user.Firstname = FirstName;
-            user.Lastname = LastName;
+            user.LastName = LastName;
             user.Email = Email;
             user.Password = PasswordHasher.HashPasswordWithSalt(ConfirmPassword, salt);
             user.PasswordSalt = Convert.ToBase64String(salt);
