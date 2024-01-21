@@ -5,8 +5,8 @@ Förhoppningvis innehåller detta projektet tills någon kollar på det:<br />
 [x] En databas (MySQL server) med tillhörande tabeller<br />
 [x] Ett (fungerande) registeringsformulär<br />
 [x] Ett (fungerande) inloggningsfönster<br />
-[ ] Ett inledande formulär om uppsättning av budget<br />
-[ ] Snygga grafer<br />
+[x] Ett inledande formulär om uppsättning av budget<br />
+[/] Snygga grafer<br />
 [ ] Bra budgettips<br />
 
 Stack: <br />
