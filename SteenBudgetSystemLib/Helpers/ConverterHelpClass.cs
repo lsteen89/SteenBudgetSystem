@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SteenBudgetSystemLib.Helpers
 {
-    public class SteenBudgetSystemHelper
+    public static class ConverterHelpClass
     {
         public static decimal ConvertToDecimal(string input)
         {

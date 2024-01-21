@@ -66,8 +66,11 @@ namespace SteenBudgetSystemLib.DataAccess
         }
         public bool CreatePartner(string Username, string partnerMainIncome, string partnerOtherIncome, string partnerName, decimal userRatio, bool firstTime)
         {
-            Decimal partnerMainIncomeDec = SteenBudgetSystemLib.Helpers.SteenBudgetSystemHelper.ConvertToDecimal(partnerMainIncome);
-            Decimal partnerOtherIncomeDec = SteenBudgetSystemLib.Helpers.SteenBudgetSystemHelper.ConvertToDecimal(partnerOtherIncome);
+            partnerMainIncome = SteenBudgetSystemLib.Helpers.StringUtilities.RemoveCommas(partnerMainIncome);
+            partnerOtherIncome = SteenBudgetSystemLib.Helpers.StringUtilities.RemoveCommas(partnerOtherIncome);
+            Decimal partnerMainIncomeDec = SteenBudgetSystemLib.Helpers.ConverterHelpClass.ConvertToDecimal(partnerMainIncome);
+            Decimal partnerOtherIncomeDec = SteenBudgetSystemLib.Helpers.ConverterHelpClass.ConvertToDecimal(partnerOtherIncome);
+
             if (firstTime)
             {
                 using (var connection = GlobalConfig.GetConnection())

@@ -32,8 +32,11 @@ namespace SteenBudgetSystemLib.ViewModel
         private double _sliderValue;
         private decimal _userRatio;
         private bool _isRatioConfirmed = true; // Checkbox starts as checked
+        public bool IsControlsEnabled => !IsRatioConfirmed;
+        public string RatioText => _financialCalculator.GetRatioText(SliderValue, IsRatioConfirmed);
 
         private UserSession _userSession;
+        private readonly FinancialCalculator _financialCalculator = new FinancialCalculator();
         public RelayCommand DebugButtonCommand { get; private set; }
         public event PropertyChangedEventHandler PropertyChanged;
         private Brush _textBlockColor = Brushes.Black;
@@ -61,6 +64,13 @@ namespace SteenBudgetSystemLib.ViewModel
             TextBlockColor = Brushes.Red;
             SetupDoneCommand = new RelayCommand(ExecuteSetupDone);
             _dialogService = dialogService;
+        }
+        public string UserPartnerRatio
+        {
+            get
+            {
+                return GetFormattedUserPartnerRatio();
+            }
         }
 
         public string UserMainIncome
@@ -167,7 +177,7 @@ namespace SteenBudgetSystemLib.ViewModel
         }
         private bool SetIncomeValue(ref string field, string value, string propertyName)
         {
-            if (IsValidInput(value))
+            if (SteenBudgetSystemLib.Helpers.StringUtilities.IsValidInput(value))
             {
                 field = value;
                 OnPropertyChanged(propertyName);
@@ -180,12 +190,6 @@ namespace SteenBudgetSystemLib.ViewModel
                 return false;
             }
         }
-        private bool IsValidInput(string input)
-        {
-            // Allow numbers, spaces, and commas anywhere in the string
-            return string.IsNullOrWhiteSpace(input) || Regex.IsMatch(input, @"^[\d\s,]*$");
-        }
-
         public bool UserHasPartner
         {
             get => _userHasPartner;
@@ -222,16 +226,10 @@ namespace SteenBudgetSystemLib.ViewModel
         }
         private bool IsValidPartnerName(string name)
         {
-            if (string.IsNullOrEmpty(name))
+            var validationResult = StringUtilities.ValidatePartnerName(name);
+            if (!validationResult.IsValid)
             {
-                ErrorMessagePartnerName = string.Empty;
-                return true;
-            }
-            string pattern = @"^\s*\p{L}+(?:\s+\p{L}+)*\s*$";
-
-            if (!Regex.IsMatch(name, pattern))
-            {
-                ErrorMessagePartnerName = "Name can only contain alphabetical characters and spaces.";
+                ErrorMessagePartnerName = validationResult.ErrorMessage;
                 _dialogService.ShowMessage(ErrorMessagePartnerName, "Validation Error");
                 return false;
             }
@@ -261,39 +259,19 @@ namespace SteenBudgetSystemLib.ViewModel
             }
             return welcome;
         }
-        public string UserPartnerRatio
+        private void CalculateAndSetUserRatio()
         {
-            get
-            {
-                decimal userMainIncome = ConvertToDecimal(UserMainIncome);
-                decimal userOtherIncome = ConvertToDecimal(UserOtherIncome);
-                decimal partnerMainIncome = ConvertToDecimal(PartnerMainIncome);
-                decimal partnerOtherIncome = ConvertToDecimal(PartnerOtherIncome);
+            FinancialCalculator calculator = new FinancialCalculator();
 
-                decimal totalIncome = userMainIncome + userOtherIncome + partnerMainIncome + partnerOtherIncome;
+            decimal userMainIncome = SteenBudgetSystemLib.Helpers.ConverterHelpClass.ConvertToDecimal(UserMainIncome);
+            decimal userOtherIncome = SteenBudgetSystemLib.Helpers.ConverterHelpClass.ConvertToDecimal(UserOtherIncome);
+            decimal partnerMainIncome = SteenBudgetSystemLib.Helpers.ConverterHelpClass.ConvertToDecimal(PartnerMainIncome);
+            decimal partnerOtherIncome = SteenBudgetSystemLib.Helpers.ConverterHelpClass.ConvertToDecimal(PartnerOtherIncome);
 
-                if (totalIncome > 0)
-                {
-                    decimal userTotalIncome = userMainIncome + userOtherIncome;
-                    decimal ratio = userTotalIncome / totalIncome * 100;
-                    UserRatio = ratio;
-                    UpdatePieChartData(userTotalIncome, totalIncome);
-                    return $"User makes {ratio:0.##}% of the total income.";
-                }
-                else
-                {
-                    return "Income details not available.";
-                }
-            }
+            UserRatio = calculator.CalculateUserRatio(userMainIncome, userOtherIncome, partnerMainIncome, partnerOtherIncome);
+            UpdatePieChartData(userMainIncome + userOtherIncome, userMainIncome + userOtherIncome + partnerMainIncome + partnerOtherIncome);
         }
-        private decimal ConvertToDecimal(string incomeString)
-        {
-            if (decimal.TryParse(incomeString, out decimal result))
-            {
-                return result;
-            }
-            return 0;
-        }
+
         private void UpdatePieChartData(decimal userIncome, decimal totalIncome)
         {
             decimal partnerIncome = totalIncome - userIncome;
@@ -333,22 +311,7 @@ namespace SteenBudgetSystemLib.ViewModel
                 }
             }
         }
-        public string RatioText
-        {
-            get
-            {
-                if (IsRatioConfirmed)
-                {
-                    return "Using calculated ratio";
-                }
-                else
-                {
-                    int xx = (int)SliderValue;
-                    int yy = 100 - xx;
-                    return $"Other ratio: {xx:00}/{yy:00}";
-                }
-            }
-        }
+
         public bool IsRatioConfirmed
         {
             get => _isRatioConfirmed;
@@ -375,27 +338,20 @@ namespace SteenBudgetSystemLib.ViewModel
                 }
             }
         }
-
-        private void CalculateAndSetUserRatio()
+        public string GetFormattedUserPartnerRatio()
         {
-            decimal userMainIncome = ConvertToDecimal(UserMainIncome);
-            decimal userOtherIncome = ConvertToDecimal(UserOtherIncome);
-            decimal partnerMainIncome = ConvertToDecimal(PartnerMainIncome);
-            decimal partnerOtherIncome = ConvertToDecimal(PartnerOtherIncome);
+            CalculateAndSetUserRatio(); // Call the common method
 
-            decimal totalIncome = userMainIncome + userOtherIncome + partnerMainIncome + partnerOtherIncome;
-
-            if (totalIncome > 0)
+            if (UserRatio > 0)
             {
-                decimal userTotalIncome = userMainIncome + userOtherIncome;
-                UserRatio = userTotalIncome / totalIncome * 100;
+                return $"User makes {UserRatio:0.##}% of the total income.";
             }
             else
             {
-                UserRatio = 0; // Or handle this case as appropriate
+                return "Income details not available.";
             }
         }
-        public bool IsControlsEnabled => !IsRatioConfirmed;
+        
         public bool IsSetupDoneEnabled
         {
             get
@@ -413,10 +369,6 @@ namespace SteenBudgetSystemLib.ViewModel
 
         private void ExecuteSetupDone(object parameter)
         {
-            _userMainIncome = RemoveCommas(_userMainIncome);
-            _userOtherIncome = RemoveCommas(_userOtherIncome);
-            _partnerMainIncome = RemoveCommas(_partnerMainIncome);
-            _partnerOtherIncome = RemoveCommas(_partnerOtherIncome);
             SqlExecutor sqlExecutor = new SqlExecutor();
             //User has partner, have to create partner table
             if(_userHasPartner)
@@ -425,29 +377,6 @@ namespace SteenBudgetSystemLib.ViewModel
             }
 
         }
-        private string RemoveCommas(string input)
-        {
-            if (string.IsNullOrEmpty(input))
-            {
-                return input;
-            }
-
-            // Remove commas from the start and end of the string
-            input = Regex.Replace(input, @"^,*|,*$", "");
-
-            // Replace two or more consecutive commas with a single comma
-            input = Regex.Replace(input, @",{2,}", ",");
-
-            // Keep only the first comma and remove the rest
-            int firstCommaIndex = input.IndexOf(',');
-            if (firstCommaIndex != -1)
-            {
-                input = input.Substring(0, firstCommaIndex + 1) + input.Substring(firstCommaIndex + 1).Replace(",", "");
-            }
-
-            return input;
-        }
-
     }
 }
 
