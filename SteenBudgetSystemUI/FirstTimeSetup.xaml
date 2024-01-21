@@ -4,15 +4,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SteenBudgetSystemUI"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
         Title="FirstTimeSetup" Height="450" Width="800">
     <Grid x:Name="FirstTimeSetupSalaryTextBox" Background="#FF97CDCE">
         <Button Content="Debug"
         HorizontalAlignment="Left"
-        Margin="538,338,0,0"
+        Margin="138,354,0,0"
         VerticalAlignment="Top"
         Height="32"
-        Width="97"
+        Width="98"
         Command="{Binding DebugButtonCommand}" />
         <TextBlock x:Name="FirstTimeSetupWelcomeTextBlock"
            HorizontalAlignment="Left"
@@ -36,6 +37,22 @@
         <TextBlock x:Name="FirstSetupMandatorySalaryTextBlock" HorizontalAlignment="Left" Margin="35,115,0,0" TextWrapping="Wrap" Text="*" VerticalAlignment="Top" Foreground="Red"/>
         <TextBlock x:Name="FirstSetupMandatoryPartnerNameTextBlock" HorizontalAlignment="Left" Margin="35,232,0,0" TextWrapping="Wrap" Text="*" VerticalAlignment="Top" Foreground="Red" Visibility="{Binding PartnerDetailsVisibility}"/>
         <TextBlock x:Name="FirstSetupMandatoryPartnerSalaryTextBlock" HorizontalAlignment="Left" Margin="35,276,0,0" TextWrapping="Wrap" Text="*" VerticalAlignment="Top" Foreground="Red" Visibility="{Binding PartnerDetailsVisibility}"/>
-
+        <TextBlock x:Name="FirstTimeSetupRatioTextBlock" HorizontalAlignment="Left" Margin="460,88,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="101" Width="294" Visibility="{Binding PartnerDetailsVisibility}" Text="{Binding UserPartnerRatio, UpdateSourceTrigger=PropertyChanged}"/>
+        <lvc:PieChart Series="{Binding FirstTimeSetupRatioPieChartData}" Margin="504,148,90,164" Visibility="{Binding PartnerDetailsVisibility}"/>
+        <CheckBox x:Name="FirstTimeSetupConfirmRatio" Content="Check this box if the above ratio should be used for shared expenses" HorizontalAlignment="Left" Margin="504,274,0,0" VerticalAlignment="Top" Visibility="{Binding PartnerDetailsVisibility}"  IsChecked="{Binding IsRatioConfirmed, Mode=TwoWay}"/>
+        <TextBlock x:Name="FirstTimeSetupRatioTextBlock1"
+           HorizontalAlignment="Left" Margin="504,327,0,0"
+           IsEnabled="{Binding IsControlsEnabled}"
+           TextWrapping="Wrap"
+           Text="{Binding RatioText}"
+           VerticalAlignment="Top"
+           Visibility="{Binding PartnerDetailsVisibility}" />
+        <Slider x:Name="FirstTimeSetupRatioSlider"
+        HorizontalAlignment="Left" Margin="504,356,0,0"
+        VerticalAlignment="Top" Width="250"
+        Minimum="0" Maximum="100"
+        IsEnabled="{Binding IsControlsEnabled}"
+        Visibility="{Binding PartnerDetailsVisibility}"
+        Value="{Binding SliderValue, Mode=TwoWay}"/>
     </Grid>
 </Window>

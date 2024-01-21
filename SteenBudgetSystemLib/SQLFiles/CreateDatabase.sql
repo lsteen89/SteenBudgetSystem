@@ -25,7 +25,7 @@ IF NOT EXISTS (SELECT * FROM sys.tables WHERE name='Users')
 BEGIN
     CREATE TABLE Users (
         Id INT IDENTITY (1, 1) PRIMARY KEY,
-        PersoId CHAR(36) NOT NULL UNIQUE,
+        Persoid CHAR(36) NOT NULL UNIQUE,
         Firstname VARCHAR(50) NOT NULL,
         LastName VARCHAR(100) NOT NULL,
         Email VARCHAR(100) NOT NULL UNIQUE,
@@ -59,29 +59,43 @@ BEGIN
     CREATE TABLE Partner (
         Id INT IDENTITY (1, 1) PRIMARY KEY,
         PersoId CHAR(36),
-		PartnerId CHAR(36),
+        PartnerId CHAR(36) UNIQUE,  -- Unique PartnerId
         Name VARCHAR(255),
         CreatedBy VARCHAR(50) NOT NULL,
         CreatedTime DATETIME NOT NULL,
-        LastUpdatedTime DATETIME
+        LastUpdatedTime DATETIME,
         FOREIGN KEY (PersoId) REFERENCES Users(PersoId)
-)
-END
+    );
+END;
 
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name='PartnerIncome')
 BEGIN
     CREATE TABLE PartnerIncome (
         Id INT IDENTITY (1, 1) PRIMARY KEY,
-        PartnerId INT, -- Assuming this references Partner(Id)
+        PartnerId CHAR(36),  -- Removed unique constraint here
         MainIncome DECIMAL(10, 2),
         SideIncome DECIMAL(10, 2),
         CreatedBy VARCHAR(50) NOT NULL,
         CreatedTime DATETIME NOT NULL,
-        LastUpdatedTime DATETIME
-        FOREIGN KEY (PartnerId) REFERENCES Partner(Id)
+        LastUpdatedTime DATETIME,
+        FOREIGN KEY (PartnerId) REFERENCES Partner(PartnerId)
     );
-END
+END;
 
+
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name='UserExpenseRatio')
+BEGIN
+	CREATE TABLE UserExpenseRatio (
+		Id INT IDENTITY (1, 1) PRIMARY KEY,
+		PersoId CHAR(36),
+		PartnerId CHAR(36) NULL, 
+		Ratio DECIMAL(10, 2),
+		CreatedBy VARCHAR(50) NOT NULL,
+        CreatedTime DATETIME NOT NULL,
+        LastUpdatedTime DATETIME
+		FOREIGN KEY (PersoId) REFERENCES Users(PersoId)
+	);
+END
 
 --insert into Users values('1', 'Linus', 'Steen', 'njur@steen.se','1', 'hemligt', 'salt','1', '1', 'admin', getdate(), getdate())
 --insert into Users values('5016b01a-dbc9-46e2-936c-e9235423a789', 'test', 'testsson', 'test@test.se','1', '9et6AQsBXdjS1MkvkE9jM58n8QXXFe51C+WO918KH8QqED3enkfGXzMJZIctC/mf', 'KhA93p5Hxl8zCWSHLQv5nw==','1', '1', 'admin', getdate(), getdate())

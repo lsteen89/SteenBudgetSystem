@@ -14,6 +14,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using SteenBudgetSystemLib.DataAccess;
 using System.Text.RegularExpressions;
+using LiveCharts.Wpf;
+using LiveCharts;
 
 namespace SteenBudgetSystemLib.ViewModel
 {
@@ -27,6 +29,9 @@ namespace SteenBudgetSystemLib.ViewModel
         private string _partnerOtherIncome;
         private string _partnerName;
         private string _errorMessagePartnerName;
+        private double _sliderValue;
+        private decimal _userRatio;
+        private bool _isRatioConfirmed = true; // Checkbox starts as checked
 
         private UserSession _userSession;
         public RelayCommand DebugButtonCommand { get; private set; }
@@ -36,6 +41,7 @@ namespace SteenBudgetSystemLib.ViewModel
         private readonly ISessionService _sessionService;
         private readonly IDialogService _dialogService;
         public ICommand SetupDoneCommand { get; private set; }
+        public SeriesCollection FirstTimeSetupRatioPieChartData { get; set; }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
@@ -62,9 +68,11 @@ namespace SteenBudgetSystemLib.ViewModel
             get => _userMainIncome;
             set
             {
-                _userMainIncome = value;
-                OnPropertyChanged(nameof(UserMainIncome));
-                OnPropertyChanged(nameof(IsSetupDoneEnabled));
+                if (SetIncomeValue(ref _userMainIncome, value, nameof(UserMainIncome)))
+                {
+                    OnPropertyChanged(nameof(IsSetupDoneEnabled));
+                    OnPropertyChanged(nameof(UserPartnerRatio));
+                }
             }
         }
 
@@ -72,7 +80,15 @@ namespace SteenBudgetSystemLib.ViewModel
         public string UserOtherIncome
         {
             get => _userOtherIncome;
-            set => SetIncomeValue(ref _userOtherIncome, value);
+            set
+            {
+                if (SetIncomeValue(ref _userOtherIncome, value, nameof(UserOtherIncome)))
+                {
+                    OnPropertyChanged(nameof(IsSetupDoneEnabled));
+                    OnPropertyChanged(nameof(UserPartnerRatio));
+                }
+            }
+
         }
 
         public string PartnerMainIncome
@@ -80,16 +96,25 @@ namespace SteenBudgetSystemLib.ViewModel
             get => _partnerMainIncome;
             set
             {
-                _partnerMainIncome = value;
-                OnPropertyChanged(nameof(PartnerMainIncome));
-                OnPropertyChanged(nameof(IsSetupDoneEnabled));
+                if (SetIncomeValue(ref _partnerMainIncome, value, nameof(PartnerMainIncome)))
+                {
+                    OnPropertyChanged(nameof(IsSetupDoneEnabled));
+                    OnPropertyChanged(nameof(UserPartnerRatio));
+                }
             }
         }
 
         public string PartnerOtherIncome
         {
             get => _partnerOtherIncome;
-            set => SetIncomeValue(ref _partnerOtherIncome, value);
+            set
+            {
+                if (SetIncomeValue(ref _partnerOtherIncome, value, nameof(PartnerOtherIncome)))
+                {
+                    OnPropertyChanged(nameof(IsSetupDoneEnabled));
+                    OnPropertyChanged(nameof(UserPartnerRatio));
+                }
+            }
         }
         public string PartnerName
         {
@@ -101,13 +126,12 @@ namespace SteenBudgetSystemLib.ViewModel
                     if (IsValidPartnerName(value))
                     {
                         _partnerName = value;
-                        ErrorMessagePartnerName = string.Empty; // Clear any existing error message
+                        ErrorMessagePartnerName = string.Empty; 
                         OnPropertyChanged(nameof(PartnerName));
                     }
                     else
                     {
                         // If validation fails, set the error message and do not update _partnerName
-                        // Error message is set within IsValidPartnerName method
                     }
                 }
             }
@@ -122,7 +146,15 @@ namespace SteenBudgetSystemLib.ViewModel
                 OnPropertyChanged(nameof(ErrorMessagePartnerName));
             }
         }
-
+        public decimal UserRatio
+        {
+            get => _userRatio;
+            set
+            {
+                _userRatio = value;
+                OnPropertyChanged(nameof(UserRatio));
+            }
+        }
 
         public Visibility PartnerDetailsVisibility
         {
@@ -133,18 +165,25 @@ namespace SteenBudgetSystemLib.ViewModel
                 OnPropertyChanged(nameof(PartnerDetailsVisibility));
             }
         }
-        private void SetIncomeValue(ref string field, string value)
+        private bool SetIncomeValue(ref string field, string value, string propertyName)
         {
             if (IsValidInput(value))
             {
                 field = value;
-                OnPropertyChanged();
+                OnPropertyChanged(propertyName);
+                return true;
             }
             else
             {
                 string error = "Invalid input! Only numbers and a single decimal point are allowed.";
                 _dialogService.ShowMessage(error, "Validation Error");
+                return false;
             }
+        }
+        private bool IsValidInput(string input)
+        {
+            // Allow numbers, spaces, and commas anywhere in the string
+            return string.IsNullOrWhiteSpace(input) || Regex.IsMatch(input, @"^[\d\s,]*$");
         }
 
         public bool UserHasPartner
@@ -168,11 +207,7 @@ namespace SteenBudgetSystemLib.ViewModel
                 }
             }
         }
-        private bool IsValidInput(string input)
-        {
-            
-            return string.IsNullOrWhiteSpace(input) || System.Text.RegularExpressions.Regex.IsMatch(input, @"^[0-9,]*$");
-        }
+
         public Brush TextBlockColor
         {
             get { return _textBlockColor; }
@@ -187,7 +222,12 @@ namespace SteenBudgetSystemLib.ViewModel
         }
         private bool IsValidPartnerName(string name)
         {
-            string pattern = @"^\s*[A-Za-z]+(?: [A-Za-z]+)*\s*$";
+            if (string.IsNullOrEmpty(name))
+            {
+                ErrorMessagePartnerName = string.Empty;
+                return true;
+            }
+            string pattern = @"^\s*\p{L}+(?:\s+\p{L}+)*\s*$";
 
             if (!Regex.IsMatch(name, pattern))
             {
@@ -206,7 +246,7 @@ namespace SteenBudgetSystemLib.ViewModel
         }
         private void ExecuteDebugButtonCommand(object parameter)
         {
-            Debug.WriteLine(UserSession.Username);
+            Debug.WriteLine(UserRatio);
         }
 
         public string WelcomeTextGenerator()
@@ -221,16 +261,141 @@ namespace SteenBudgetSystemLib.ViewModel
             }
             return welcome;
         }
-        private void ExecuteSetupDone(object parameter)
+        public string UserPartnerRatio
         {
-            SqlExecutor sqlExecutor = new SqlExecutor();
-            //User has partner, have to create partner table
-            if(_userHasPartner)
+            get
             {
-                sqlExecutor.CreatePartner(_userSession.Username, _partnerMainIncome, _partnerOtherIncome, _partnerName);
-            }
+                decimal userMainIncome = ConvertToDecimal(UserMainIncome);
+                decimal userOtherIncome = ConvertToDecimal(UserOtherIncome);
+                decimal partnerMainIncome = ConvertToDecimal(PartnerMainIncome);
+                decimal partnerOtherIncome = ConvertToDecimal(PartnerOtherIncome);
 
+                decimal totalIncome = userMainIncome + userOtherIncome + partnerMainIncome + partnerOtherIncome;
+
+                if (totalIncome > 0)
+                {
+                    decimal userTotalIncome = userMainIncome + userOtherIncome;
+                    decimal ratio = userTotalIncome / totalIncome * 100;
+                    UserRatio = ratio;
+                    UpdatePieChartData(userTotalIncome, totalIncome);
+                    return $"User makes {ratio:0.##}% of the total income.";
+                }
+                else
+                {
+                    return "Income details not available.";
+                }
+            }
         }
+        private decimal ConvertToDecimal(string incomeString)
+        {
+            if (decimal.TryParse(incomeString, out decimal result))
+            {
+                return result;
+            }
+            return 0;
+        }
+        private void UpdatePieChartData(decimal userIncome, decimal totalIncome)
+        {
+            decimal partnerIncome = totalIncome - userIncome;
+            FirstTimeSetupRatioPieChartData = new SeriesCollection
+        {
+        new PieSeries
+        {
+            Title = "User Income",
+            Values = new ChartValues<decimal> { userIncome },
+            DataLabels = true
+        },
+        new PieSeries
+        {
+            Title = "Partner Income",
+            Values = new ChartValues<decimal> { partnerIncome },
+            DataLabels = true
+        }
+        };
+
+            OnPropertyChanged(nameof(FirstTimeSetupRatioPieChartData));
+        }
+        public double SliderValue
+        {
+            get => _sliderValue;
+            set
+            {
+                if (_sliderValue != value)
+                {
+                    _sliderValue = value;
+                    OnPropertyChanged(nameof(SliderValue));
+                    OnPropertyChanged(nameof(RatioText));
+
+                    if (!IsRatioConfirmed)
+                    {
+                        UserRatio = (int)value;
+                    }
+                }
+            }
+        }
+        public string RatioText
+        {
+            get
+            {
+                if (IsRatioConfirmed)
+                {
+                    return "Using calculated ratio";
+                }
+                else
+                {
+                    int xx = (int)SliderValue;
+                    int yy = 100 - xx;
+                    return $"Other ratio: {xx:00}/{yy:00}";
+                }
+            }
+        }
+        public bool IsRatioConfirmed
+        {
+            get => _isRatioConfirmed;
+            set
+            {
+                if (_isRatioConfirmed != value)
+                {
+                    _isRatioConfirmed = value;
+                    OnPropertyChanged(nameof(IsRatioConfirmed));
+                    OnPropertyChanged(nameof(IsControlsEnabled));
+                    OnPropertyChanged(nameof(RatioText));
+
+                    if (!value)
+                    {
+                        // When the checkbox is unchecked, use the slider value as the ratio
+                        int xx = (int)SliderValue;
+                        UserRatio = xx;
+                    }
+                    else
+                    {
+                        // When the checkbox is checked, calculate and update the ratio based on income
+                        CalculateAndSetUserRatio();
+                    }
+                }
+            }
+        }
+
+        private void CalculateAndSetUserRatio()
+        {
+            decimal userMainIncome = ConvertToDecimal(UserMainIncome);
+            decimal userOtherIncome = ConvertToDecimal(UserOtherIncome);
+            decimal partnerMainIncome = ConvertToDecimal(PartnerMainIncome);
+            decimal partnerOtherIncome = ConvertToDecimal(PartnerOtherIncome);
+
+            decimal totalIncome = userMainIncome + userOtherIncome + partnerMainIncome + partnerOtherIncome;
+
+            if (totalIncome > 0)
+            {
+                decimal userTotalIncome = userMainIncome + userOtherIncome;
+                UserRatio = userTotalIncome / totalIncome * 100;
+            }
+            else
+            {
+                UserRatio = 0; // Or handle this case as appropriate
+            }
+        }
+        public bool IsControlsEnabled => !IsRatioConfirmed;
         public bool IsSetupDoneEnabled
         {
             get
@@ -244,6 +409,43 @@ namespace SteenBudgetSystemLib.ViewModel
                     return !string.IsNullOrWhiteSpace(UserMainIncome);
                 }
             }
+        }
+
+        private void ExecuteSetupDone(object parameter)
+        {
+            _userMainIncome = RemoveCommas(_userMainIncome);
+            _userOtherIncome = RemoveCommas(_userOtherIncome);
+            _partnerMainIncome = RemoveCommas(_partnerMainIncome);
+            _partnerOtherIncome = RemoveCommas(_partnerOtherIncome);
+            SqlExecutor sqlExecutor = new SqlExecutor();
+            //User has partner, have to create partner table
+            if(_userHasPartner)
+            {
+                sqlExecutor.CreatePartner(_userSession.Username, _partnerMainIncome, _partnerOtherIncome, _partnerName, _userRatio, _userSession.FirstLogin);
+            }
+
+        }
+        private string RemoveCommas(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                return input;
+            }
+
+            // Remove commas from the start and end of the string
+            input = Regex.Replace(input, @"^,*|,*$", "");
+
+            // Replace two or more consecutive commas with a single comma
+            input = Regex.Replace(input, @",{2,}", ",");
+
+            // Keep only the first comma and remove the rest
+            int firstCommaIndex = input.IndexOf(',');
+            if (firstCommaIndex != -1)
+            {
+                input = input.Substring(0, firstCommaIndex + 1) + input.Substring(firstCommaIndex + 1).Replace(",", "");
+            }
+
+            return input;
         }
 
     }
