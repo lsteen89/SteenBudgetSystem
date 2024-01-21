@@ -1,6 +1,6 @@
 Detta projektet var något jag enbart gjorde inför min intervju till Macrobond.<br />
 <br />
-Projektet innhåller följande:
+Projektet innhåller följande:<br />
 <br />
 [x] En databas (MySQL server) med tillhörande tabeller<br />
 -Det finns en komplett .SQL-fil i projektet som skapar databas + tabeller och en användare.  <br />
