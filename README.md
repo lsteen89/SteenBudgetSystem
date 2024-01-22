@@ -1,6 +1,6 @@
-Detta projektet är ett system för att kunna skapa och räkna ut en budget för en användare.<br />
-Efter inmatning utav budget uppgifter så görs grafer och presentationer över vart pengarna går och vilka poster som sticker ut. .<br />
-Byggt i C#.net, använder WPF och allt lagras i en MySql databas..<br />
+Detta projekt är ett system för att kunna skapa och räkna ut en budget för en användare.<br />
+Efter inmatning utav budgetuppgifter så görs grafer och presentationer över vart pengarna går och vilka poster som sticker ut. .<br />
+Byggt i C#.net, använder WPF och allt lagras i en MySql databas.<br />
 <br />
 Projektet innhåller följande:<br />
 <br />
