@@ -47,9 +47,43 @@ namespace SteenBudgetSystemLib.Helpers
 
             return (true, string.Empty);
         }
-        public static bool IsValidInput(string input)
+        public static bool IsDecimalFieldValidInput(string input)
         {
             return string.IsNullOrWhiteSpace(input) || Regex.IsMatch(input, @"^[\d\s,]*$");
+                                                        
         }
+
+        public static bool IsValidEmail(string email)
+        {
+            return !string.IsNullOrWhiteSpace(email) &&
+                   Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+        }
+
+        public static bool IsValidName(string name)
+        {
+            return !string.IsNullOrWhiteSpace(name) && Regex.IsMatch(name, @"^\p{L}+$");
+                   //Regex.IsMatch(name, @"^[a-zA-ZåäöÅÄÖ]+$");
+        }
+        public static (bool IsValid, string ErrorMessage) ValidatePassword(string password)
+        {
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                return (false, "Password cannot be empty.");
+            }
+
+            bool hasMinimumLength = password.Length >= 8;
+            bool hasUpperCase = password.Any(char.IsUpper);
+            bool hasNumber = password.Any(char.IsDigit);
+
+            if (hasMinimumLength && hasUpperCase && hasNumber)
+            {
+                return (true, "Password is valid");
+            }
+            else
+            {
+                return (false, "Password must be at least 8 characters long, contain an uppercase letter, and a number");
+            }
+        }
+
     }
 }

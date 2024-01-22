@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 using Dapper;
 using System.Data;
 
-namespace SteenBudgetSystemLib
+namespace SteenBudgetSystemLib.DataAccess
 {
     public class GlobalConfig
     {
@@ -16,7 +16,7 @@ namespace SteenBudgetSystemLib
 
         static GlobalConfig()
         {
-            
+
             connectionString = ConfigurationManager.ConnectionStrings["BudgetSystemConnection"].ConnectionString;
         }
 

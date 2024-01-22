@@ -10,6 +10,7 @@ using System.Windows;
 using System.Text.RegularExpressions;
 using SteenBudgetSystemLib.Models;
 using SteenBudgetSystemLib.DataAccess;
+using SteenBudgetSystemLib.Services;
 
 namespace SteenBudgetSystemLib.ViewModel
 {
@@ -25,6 +26,7 @@ namespace SteenBudgetSystemLib.ViewModel
         private string _validationMessage;
         private string _emailValidationMessage;
         private string _passwordValidationMessage;
+        private string _firstNameValidationMessage;
         private User _user;
 
         
@@ -174,16 +176,13 @@ namespace SteenBudgetSystemLib.ViewModel
         }
         private bool CanExecuteCreateUser(object parameter)
         {
-            return !string.IsNullOrWhiteSpace(FirstName) &&
-                   !string.IsNullOrWhiteSpace(LastName) &&
-                   !string.IsNullOrWhiteSpace(Email) &&
+            return StringUtilities.IsValidName(FirstName) &&
+                   StringUtilities.IsValidName(LastName) &&
+                   StringUtilities.IsValidEmail(Email) &&
                    PasswordsMatch &&
-                   Regex.IsMatch(Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$") && // Basic email validation
-                   Regex.IsMatch(FirstName, @"^[a-zA-ZåäöÅÄÖ]+$") && // Validation for FirstName
-                   Regex.IsMatch(LastName, @"^[a-zA-ZåäöÅÄÖ]+$") &&// Validation for LastName
                    PasswordValidationMessage.Equals("Password is valid");
         }
-        private string _firstNameValidationMessage;
+        
         public string FirstNameValidationMessage
         {
             get { return _firstNameValidationMessage; }
@@ -249,76 +248,46 @@ namespace SteenBudgetSystemLib.ViewModel
             switch (fieldName)
             {
                 case "FirstName":
+                    FirstNameValidationMessage = StringUtilities.IsValidName(fieldValue) ?
+                                                  "Valid First Name" : "Invalid characters in First Name";
+                    FirstNameValidationVisibility = Visibility.Visible;
+                    break;
+
                 case "LastName":
-                    bool isNameValid = Regex.IsMatch(fieldValue, @"^[a-zA-ZåäöÅÄÖ]+$");
-                    if (fieldName == "FirstName")
-                    {
-                        FirstNameValidationMessage = isNameValid ? "Valid First Name" : "Invalid characters in First Name";
-                        FirstNameValidationVisibility = Visibility.Visible;
-                    }
-                    else if (fieldName == "LastName")
-                    {
-                        LastNameValidationMessage = isNameValid ? "Valid Last Name" : "Invalid characters in Last Name";
-                        LastNameValidationVisibility = Visibility.Visible;
-                    }
+                    LastNameValidationMessage = StringUtilities.IsValidName(fieldValue) ?
+                                                "Valid Last Name" : "Invalid characters in Last Name";
+                    LastNameValidationVisibility = Visibility.Visible;
                     break;
 
                 case "Email":
-                    bool isEmailValid = !string.IsNullOrWhiteSpace(fieldValue) && Regex.IsMatch(fieldValue, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
-                    EmailValidationMessage = isEmailValid ? "Valid Email" : "Invalid Email";
+                    EmailValidationMessage = StringUtilities.IsValidEmail(fieldValue) ?
+                                             "Valid Email" : "Invalid Email";
                     EmailValidationVisibility = Visibility.Visible;
                     break;
-
-                    // Add cases for other fields if needed
             }
         }
         private void ValidatePassword(string password)
         {
-            var hasMinimumLength = !string.IsNullOrWhiteSpace(password) && password.Length >= 8;
-            var hasUpperCase = password.Any(char.IsUpper);
-            var hasNumber = password.Any(char.IsDigit);
+            var validationResult = StringUtilities.ValidatePassword(password);
 
-            if (hasMinimumLength && hasUpperCase && hasNumber)
-            {
-                PasswordValidationMessage = "Password is valid";
-                PasswordValidationVisibility = Visibility.Visible;
-            }
-            else
-            {
-                PasswordValidationMessage = "Password must be at least 8 characters long, contain an uppercase letter and a number";
-                PasswordValidationVisibility = Visibility.Visible;
-            }
+            PasswordValidationMessage = validationResult.ErrorMessage;
+            PasswordValidationVisibility = Visibility.Visible;
         }
         private void ExecuteCreateUser(object parameter)
         {
-            int saltSize = 16;
-            byte[] salt = PasswordHasher.GenerateSalt(saltSize);
+            UserService userService = new UserService();
 
-            User user = new();
+            bool isUserCreated = userService.CreateUser(FirstName, LastName, Email, ConfirmPassword);
 
-            user.Firstname = FirstName;
-            user.LastName = LastName;
-            user.Email = Email;
-            user.Password = PasswordHasher.HashPasswordWithSalt(ConfirmPassword, salt);
-            user.PasswordSalt = Convert.ToBase64String(salt);
-
-            try
+            if (isUserCreated)
             {
-                SqlExecutor sqlExecutor = new SqlExecutor();
-                bool isUserCreated = sqlExecutor.CreateUser(user);
-                if (isUserCreated)
-                {
-                    MessageBox.Show("User was created successfully!\nLoginname is your e-mail.\nPlease verify account via email before logging in");
-                    RequestClose?.Invoke();
-                }
-                else
-                    MessageBox.Show("An error occurred during user creation.");
+                MessageBox.Show("User was created successfully!\nLoginname is your e-mail.\nPlease verify account via email before logging in");
+                RequestClose?.Invoke();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("An error occurred: " + ex.Message);
+                MessageBox.Show("An error occurred during user creation.");
             }
-
         }
     }
 }

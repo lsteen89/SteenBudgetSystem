@@ -1,19 +1,12 @@
 ﻿using SteenBudgetSystemLib.Helpers;
 using SteenBudgetSystemLib.Models;
 using SteenBudgetSystemLib.Services;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using SteenBudgetSystemLib.DataAccess;
-using System.Text.RegularExpressions;
 using LiveCharts.Wpf;
 using LiveCharts;
 
@@ -177,7 +170,7 @@ namespace SteenBudgetSystemLib.ViewModel
         }
         private bool SetIncomeValue(ref string field, string value, string propertyName)
         {
-            if (SteenBudgetSystemLib.Helpers.StringUtilities.IsValidInput(value))
+            if (SteenBudgetSystemLib.Helpers.StringUtilities.IsDecimalFieldValidInput(value))
             {
                 field = value;
                 OnPropertyChanged(propertyName);
@@ -366,16 +359,17 @@ namespace SteenBudgetSystemLib.ViewModel
                 }
             }
         }
-
         private void ExecuteSetupDone(object parameter)
         {
-            SqlExecutor sqlExecutor = new SqlExecutor();
-            //User has partner, have to create partner table
-            if(_userHasPartner)
+            //Todo: Continue this method!!
+            UserService userService = new UserService();
+
+            if (_userHasPartner)
             {
-                sqlExecutor.CreatePartner(_userSession.Username, _partnerMainIncome, _partnerOtherIncome, _partnerName, _userRatio, _userSession.FirstLogin);
+                bool result = userService.CreateOrUpdatePartner(_userSession.Username, _partnerMainIncome, _partnerOtherIncome, _partnerName, _userRatio, _userSession.FirstLogin);
             }
 
+           
         }
     }
 }

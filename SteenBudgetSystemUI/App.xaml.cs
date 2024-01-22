@@ -29,6 +29,7 @@ namespace SteenBudgetSystemUI
             // Register services
             services.AddSingleton<ISessionService, SessionService>();
             services.AddSingleton<IDialogService, DialogService>();
+            services.AddSingleton<AuthenticationService>();
 
             // Register ViewModels
             services.AddTransient<LoginViewModel>();
@@ -40,6 +41,7 @@ namespace SteenBudgetSystemUI
             services.AddTransient<CreateUser>();
             services.AddTransient<MainWindow>();
             services.AddSingleton<FirstTimeSetup>();
+            
 
             // Build the service provider
             _serviceProvider = services.BuildServiceProvider();
