@@ -27,15 +27,14 @@ BEGIN
         Id INT IDENTITY (1, 1) PRIMARY KEY,
         Persoid CHAR(36) NOT NULL UNIQUE,
         Firstname VARCHAR(50) NOT NULL,
-        LastName VARCHAR(100) NOT NULL,
+        LastName VARCHAR(50) NOT NULL,
         Email VARCHAR(100) NOT NULL UNIQUE,
         EmailConfirmed bit,
         Password NVARCHAR(100) NOT NULL,
-        PasswordSalt NVARCHAR(100),
         roles varchar(20) not null,
         FirstLogin BIT DEFAULT 1,
         CreatedBy VARCHAR(50) NOT NULL,
-        CreatedTime DATETIME NOT NULL,
+        CreatedTime DATETIME NOT NULL DEFAULT GETDATE(),
         LastUpdatedTime DATETIME
     )
 END
@@ -48,7 +47,7 @@ BEGIN
         MainIncome DECIMAL(10, 2),
         SideIncome DECIMAL(10, 2),
         CreatedBy VARCHAR(50) NOT NULL,
-        CreatedTime DATETIME NOT NULL,
+        CreatedTime DATETIME NOT NULL DEFAULT GETDATE(),
         LastUpdatedTime DATETIME
         FOREIGN KEY (PersoId) REFERENCES Users(PersoId)
     )
@@ -62,7 +61,7 @@ BEGIN
         PartnerId CHAR(36) UNIQUE,  -- Unique PartnerId
         Name VARCHAR(255),
         CreatedBy VARCHAR(50) NOT NULL,
-        CreatedTime DATETIME NOT NULL,
+        CreatedTime DATETIME NOT NULL DEFAULT GETDATE(),
         LastUpdatedTime DATETIME,
         FOREIGN KEY (PersoId) REFERENCES Users(PersoId)
     );
@@ -76,7 +75,7 @@ BEGIN
         MainIncome DECIMAL(10, 2),
         SideIncome DECIMAL(10, 2),
         CreatedBy VARCHAR(50) NOT NULL,
-        CreatedTime DATETIME NOT NULL,
+        CreatedTime DATETIME NOT NULL DEFAULT GETDATE(),
         LastUpdatedTime DATETIME,
         FOREIGN KEY (PartnerId) REFERENCES Partner(PartnerId)
     );
@@ -91,10 +90,21 @@ BEGIN
 		PartnerId CHAR(36) NULL, 
 		Ratio DECIMAL(10, 2),
 		CreatedBy VARCHAR(50) NOT NULL,
-        CreatedTime DATETIME NOT NULL,
+        CreatedTime DATETIME NOT NULL DEFAULT GETDATE(),
         LastUpdatedTime DATETIME
 		FOREIGN KEY (PersoId) REFERENCES Users(PersoId)
 	);
+END
+
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name='ErrorLog')
+BEGIN
+    CREATE TABLE ErrorLog (
+        LogId INT IDENTITY(1,1) PRIMARY KEY,
+        CreatedTime DATETIME NOT NULL DEFAULT GETDATE(),
+        ErrorMessage NVARCHAR(MAX),
+        SubmittedBy NVARCHAR(100), 
+        UserInput NVARCHAR(MAX)
+    )
 END
 
 --insert into Users values('1', 'Linus', 'Steen', 'njur@steen.se','1', 'hemligt', 'salt','1', '1', 'admin', getdate(), getdate())
